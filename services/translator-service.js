@@ -1,43 +1,31 @@
-import axios from "axios";
+import axios from 'axios'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
-const options = {
-  method: 'POST',
-  url: 'https://google-translate1.p.rapidapi.com/language/translate/v2',
-  headers: {
-    'content-type': 'application/x-www-form-urlencoded',
-    'Accept-Encoding': 'application/gzip',
-    'X-RapidAPI-Key': process.env.RapidAPIKey,
-    'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
-  }
-};
-
 class TranslatorService {
-    async translate(query) {
-        console.log(query)
-        const encodedParams = new URLSearchParams();
-        if(!query?.text) {
-            return
-        }
-        encodedParams.append("q", query.text);
-        encodedParams.append("target", "ru");
-        encodedParams.append("source", "en");
+	async translate(query) {
+		const options = {
+			method: 'GET',
+			url: `https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${process.env.yandex}&lang=en-ru&text=${query.text}`,
+			headers: { 'Content-Type': 'application/json' },
+		}
+		const res = await axios
+			.request({
+				...options,
+			})
+			.then(function (response) {
+				const translate = response.data
+				console.log(translate)
+				return translate
+			})
+			.catch(function (error) {
+				console.log(error)
+				throw new Error(error)
+			})
 
-        const res = await axios.request({
-            ...options,
-            data: encodedParams
-        }).then(function (response) {
-            const translate = response.data.data.translations[0].translatedText
-            console.log(translate)
-            return translate
-        }).catch(function (error) {
-            throw new Error(error)
-        });
-
-        return res
-    }
+		return res
+	}
 }
 
-export default new TranslatorService();
+export default new TranslatorService()
