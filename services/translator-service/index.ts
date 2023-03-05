@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import dotenv from 'dotenv'
 
 import { transformData } from './transform-data'
@@ -6,7 +6,7 @@ import { transformData } from './transform-data'
 dotenv.config()
 
 class TranslatorService {
-	async translate(query: any) {
+	async translate(query: { lang?: 'ru' | 'en'; text?: string }) {
 		console.log(query)
 		const options = {
 			method: 'GET',

@@ -210,18 +210,3 @@ const data = {
 		},
 	],
 }
-
-export function transformData(data: any) {
-	const translates = data?.def
-	const translate = translates?.[0]?.tr?.[0]?.text
-
-	// translates?.reduce((acc, item) => {})
-
-	return {
-		translate,
-		synonyms: {
-			ru: [],
-			en: [],
-		},
-	}
-}
