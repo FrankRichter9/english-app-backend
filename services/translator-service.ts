@@ -1,23 +1,28 @@
 import axios from 'axios'
 import dotenv from 'dotenv'
 
+import { transformData } from './transform-data'
+
 dotenv.config()
 
 class TranslatorService {
-	async translate(query) {
+	async translate(query: any) {
+		console.log(query)
 		const options = {
 			method: 'GET',
-			url: `https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${process.env.yandex}&lang=en-ru&text=${query.text}`,
+			url: `https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${
+				process.env.yandex
+			}&lang=${query.lang === 'ru' ? 'ru-en' : 'en-ru'}&text=${
+				query.text
+			}`,
 			headers: { 'Content-Type': 'application/json' },
 		}
 		const res = await axios
-			.request({
-				...options,
-			})
+			.request(options)
 			.then(function (response) {
 				const translate = response.data
 				console.log(translate)
-				return translate
+				return transformData(translate)
 			})
 			.catch(function (error) {
 				console.log(error)

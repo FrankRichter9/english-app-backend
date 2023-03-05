@@ -1,7 +1,8 @@
-import TranslatorService from '../services/translator-service.js'
+import express from 'express'
+import TranslatorService from '../services/translator-service'
 
 class TranslatorController {
-	async translate(req, res) {
+	async translate(req: express.Request, res: express.Response) {
 		try {
 			// console.log(req)
 			const translate = await TranslatorService.translate(req.query)
