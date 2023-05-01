@@ -22,7 +22,7 @@ class TranslatorService {
 			.then(function (response) {
 				const translate = response.data
 				console.log(translate)
-				return transformData(translate)
+				return transformData(translate, query.lang || 'en')
 			})
 			.catch(function (error) {
 				console.log(error)
@@ -32,5 +32,7 @@ class TranslatorService {
 		return res
 	}
 }
+
+
 
 export default new TranslatorService()

@@ -5,7 +5,10 @@ const DEFAULT_SYNONYMS = {
 	en: [],
 }
 
-export function transformData(data: YandexTranslatorData): TranslateResponse {
+export function transformData(
+	data: YandexTranslatorData,
+	lang: 'ru' | 'en'
+): TranslateResponse {
 	const translates = data?.def
 	const translate = translates?.[0]?.tr?.[0]?.text || null
 
@@ -45,9 +48,9 @@ export function transformData(data: YandexTranslatorData): TranslateResponse {
 	)
 
 	const valudSynonyms = {
-		ru: synonyms.ru.filter((arr) => arr.length),
-		en: synonyms.en.filter((arr) => arr.length),
-	}
+		[lang === 'en' ? 'ru' : 'en']: synonyms.ru.filter((arr) => arr.length),
+		[lang === 'en' ? 'en' : 'ru']: synonyms.en.filter((arr) => arr.length),
+	} as Synonyms
 
 	return {
 		translate,
