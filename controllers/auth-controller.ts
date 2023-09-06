@@ -4,16 +4,20 @@ import { UserService } from '../services/user-service'
 
 class AuthController {
 	async registration(req: express.Request, res: express.Response) {
+		console.log('TEST')
 		try {
 			const { email, password } = req.body
-			const userData = await UserService.registration(email, password)
+			console.log(email, password)
+			// const userData = await UserService.registration(email, password)
 
-			res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+			// res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
 
-			return res.json(userData)
+			return res.json({ text: 'пошел нахуй' })
 		} catch (e) {
 			console.log(e)
-			res.status(400).json(e)
+			res.status(400).json({
+				text: 'привет'
+			})
 		}
 	}
 	async login(req: express.Request, res: express.Response) {

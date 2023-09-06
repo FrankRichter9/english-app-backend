@@ -1,5 +1,6 @@
 import express from 'express'
 import TranslatorController from '../controllers/translator-controller'
+import WordsController from '../controllers/words-controller'
 
 const translatorRouter = express.Router()
 
@@ -54,5 +55,7 @@ const translatorRouter = express.Router()
  */
 
 translatorRouter.get('/translate', TranslatorController.translate)
+translatorRouter.get('/words', WordsController.getAllWords)
+translatorRouter.post('/word', WordsController.setWord)
 
 export default translatorRouter

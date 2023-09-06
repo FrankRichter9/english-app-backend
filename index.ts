@@ -9,15 +9,15 @@ import swaggerJsDoc from 'swagger-jsdoc'
 
 import mongoose, { Schema } from 'mongoose'
 import authRouter from './routes/auth-router'
+import { SqlService } from './sql/connect-bd'
+import { createWordsTable } from './sql/create-words-table'
 
 dotenv.config()
-
-console.log(mongoose.models)
 
 const options = {
 	definition: {
 		openapi: '3.0.0',
-		info: {
+		info: { 
 			title: 'English-app-backend',
 			version: '1.0.0',
 			description: 'Simple api',
@@ -34,21 +34,22 @@ const options = {
 const specs = swaggerJsDoc(options)
 
 const PORT = process.env.PORT || 5000
-
+ 
 const app = express()
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs))
 
-app.use(express.json())
+app.use(express.json()) 
 app.use(cookieParser())
-app.use(cors())
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 
 app.use('/api', translatorRouter)
 app.use('/auth', authRouter)
 
 async function startApp() {
 	try {
-		await mongoose.connect(process.env.DB_URL || '')
+		await SqlService.connect()
+		// createWordsTable()
 
 		app.listen(PORT, () => {
 				console.log(`Server started on port ${PORT}...`)

@@ -19,8 +19,9 @@
 	},
 	"homepage": "https://github.com/FrankRichter9/english-app-backend#readme",
 	"dependencies": {
+		"@types/pg": "^8.10.2",
 		"axios": "^1.3.3",
-		"bcrypt": "^5.1.0",
+		"bcrypt": "^5.1.1",
 		"bcryptjs": "^2.4.3",
 		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
@@ -29,6 +30,8 @@
 		"jsonwebtoken": "^9.0.0",
 		"mongoose": "^7.0.3",
 		"nodemailer": "^6.9.1",
+		"pg": "^8.11.3",
+		"side-channel": "^1.0.4",
 		"swagger-jsdoc": "^6.2.8",
 		"swagger-ui-express": "^4.6.2",
 		"uuid": "^9.0.0"
