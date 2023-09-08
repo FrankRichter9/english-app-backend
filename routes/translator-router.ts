@@ -57,5 +57,6 @@ const translatorRouter = express.Router()
 translatorRouter.get('/translate', TranslatorController.translate)
 translatorRouter.get('/words', WordsController.getAllWords)
 translatorRouter.post('/word', WordsController.setWord)
+translatorRouter.delete('/word', WordsController.deleteWord)
 
 export default translatorRouter
