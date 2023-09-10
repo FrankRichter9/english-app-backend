@@ -3,29 +3,42 @@ import { createWordsTable } from '../sql/create-words-table'
 import { addWord } from '../sql/add-word'
 import { getWords } from '../sql/get-words'
 import { deleteWord } from '../sql/delete-word'
+import { countWords } from '../sql/count-words'
+
+const DEFAULT_LIMIT = 20
 
 class WordsController {
 	async getAllWords(req: express.Request, res: express.Response) {
-		const words = await getWords()
+		const {limit: reqLimit, page: reqPage} = req.query
 
-		return res.json(words)
+		const limit = reqLimit ? Number(reqLimit) : DEFAULT_LIMIT
+		const page = reqPage ? Number(reqPage) : 1
+		const offset = (page - 1) * limit
+
+		const words = await getWords(limit, offset)
+		const count = await countWords()
+
+		return res.json({
+			words,
+			pagination: {
+				page,
+				count,
+				countPages: Math.ceil(count / limit)
+			}
+		})
 	}
 
 	async setWord(req: express.Request, res: express.Response) {
 		// createWordsTable()
-		addWord(req.body)
-		res.send(200)
+		const err = await addWord(req.body)
+		res.send(err ? 400 : 200)
 	}
 
 	async deleteWord(req: express.Request, res: express.Response) {
 		// createWordsTable()
 		const err = await deleteWord(req.body.id)
 
-		if (!err) {
-			res.send(200)
-			return
-		}
-		res.send(400)
+		res.send(err ? 400 : 200)
 	}
 }
 

@@ -1,68 +1,75 @@
 import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid'
 
-import { User } from '../../models/user-model'
+import { User, createUserDto } from '../../models/user-model'
 import { MailService } from '../mail-service'
 import { TokenService } from '../token-service'
+import { createUsersTable } from '../../sql/users/create-users-table'
+import { findUserByEmail } from '../../sql/users/find-user-by-email'
+import { addUser } from '../../sql/users/add-user'
+import { getUsers } from '../../sql/users/get-users'
+import { findTokens } from '../../sql/tokens/find-tokens'
+import { findUserById } from '../../sql/users/find-user-by-id'
 
 class Service {
     async registration(email: string, password: string) {
-        const candidate = await User.findOne({ email })
+        // const createTableErr = await createUsersTable()
+        const { data: candidate } = await findUserByEmail(email)
 
         if(candidate) {
             throw new Error(`Пользователь с почтовым адресом ${email} уже существует`)
         }
 
         const hashPassword = await bcrypt.hash(password, 3)
-        const activationLink = uuidv4()
-        const user = await User.create({ email, password: hashPassword, activationLink })
+        const activation_link = uuidv4()
 
-        // await MailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}` )
+        const { error: addUserError } = await addUser(new User({ email, password: hashPassword, activation_link, is_activated: false }))
 
-        const userDto = {
-            email: user.email,
-            id: user._id,
-            isActivated: user.isActivated
+        if(addUserError) {
+            throw new Error(`Ошибка создания пользователя`)
         }
-        const tokens = TokenService.generateToken(userDto)
 
-        await TokenService.saveToken(userDto.id, tokens.refreshToken)
+        const { data: user } = await findUserByEmail(email)
+
+        // // await MailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}` )
+
+        const userDto = createUserDto(user)
+        // const tokens = TokenService.generateToken(userDto)
+
+        // await TokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
-            ...tokens,
             user: userDto
         }
     }
 
     async activate(activationLink: string) {
-        const user = await User.findOne({ activationLink })
+        // const user = await User.findOne({ activationLink })
 
-        if(!user) {
-            throw new Error('Неккоректная ссылка активации')
-        }
+        // if(!user) {
+        //     throw new Error('Неккоректная ссылка активации')
+        // }
 
-        user.isActivated = true
-        await user.save()
+        // user.isActivated = true
+        // await user.save()
     }
 
     async login(email: string, password: string) {
-        const user = await User.findOne({ email })
+        const { data: user } = await findUserByEmail(email)
+
+        const errorText = 'Неверный логин или пароль'
         
         if(!user) {
-            throw new Error('Пользователь с таким email не найден')
+            throw new Error(errorText)
         }
 
         const isPassEquals = await bcrypt.compare(password, user.password)
 
         if(!isPassEquals) {
-            throw new Error('Неверный пароль')
+            throw new Error(errorText)
         }
 
-        const userDto = {
-            email: user.email,
-            id: user._id,
-            isActivated: user.isActivated
-        }
+        const userDto = createUserDto(user)
         const tokens = TokenService.generateToken(userDto)
 
         await TokenService.saveToken(userDto.id, tokens.refreshToken)
@@ -74,32 +81,35 @@ class Service {
     }
 
     async logout(refreshToken: string) {
-        const token = await TokenService.removeToken(refreshToken);
+        await TokenService.removeToken(refreshToken);
 
-        return token
+        return true
     }
 
     async refresh(refreshToken: string) {
+        const errorText = 'Пользователь не авторизован'
         if(!refreshToken) {
-            throw new Error('Пользователь не авторизован')
+            throw new Error(errorText)
         }
 
         const userData = TokenService.validateRefreshToken(refreshToken)
-        const tokenFromDb = TokenService.findToken(refreshToken)
+        const tokenFromDb = findTokens(refreshToken)
 
         if(!userData || !tokenFromDb) {
-            throw new Error('Пользователь не авторизован')
+            throw new Error(errorText)
         }
 
         //@ts-expect-error
-        const user = await User.findById(userData.id as string)
+        const { error, data: user } = await findUserById(userData.id)
+
+        if(error) {
+            throw new Error(errorText)
+        }
+
         const userDto = {
-            //@ts-expect-error
             email: user.email,
-            //@ts-expect-error
-            id: user._id,
-            //@ts-expect-error
-            isActivated: user.isActivated
+            id: user.id,
+            is_activated: user.is_activated
         }
         const tokens = TokenService.generateToken(userDto)
 
@@ -112,7 +122,7 @@ class Service {
     }
 
     async getAllUsers() {
-        const users = await User.find()
+        const users = await getUsers()
 
         return users
     }

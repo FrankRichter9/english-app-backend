@@ -4,7 +4,6 @@ import TranslatorService from '../services/translator-service'
 class TranslatorController {
 	async translate(req: express.Request, res: express.Response) {
 		try {
-			// console.log(req)
 			const translate = await TranslatorService.translate(req.query)
 			res.json(translate)
 		} catch (e) {

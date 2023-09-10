@@ -2,6 +2,11 @@ import jwt from 'jsonwebtoken'
 
 import { Token } from '../../models/token-model'
 import { Types } from 'mongoose'
+import { findUserById } from '../../sql/users/find-user-by-id'
+import { createTokensTable } from '../../sql/tokens/create-tokens-table'
+import { addTokens } from '../../sql/tokens/add-tokens'
+import { deleteTokens } from '../../sql/tokens/delete-tokens'
+import { findTokens } from '../../sql/tokens/find-tokens'
 
 class Service {
     generateToken(payload: Record<string, any>) {
@@ -14,23 +19,20 @@ class Service {
         }
     }
 
-    async saveToken(userId: Types.ObjectId, refreshToken: string) {
-        const tokenData = await Token.findOne({ user: userId })
+    async saveToken(userId: number, refreshToken: string) {
+        const { error } = await addTokens(userId, refreshToken)
 
-        if(tokenData) {
-            tokenData.refreshToken = refreshToken
-            return tokenData.save()
+        if(error) {
+            throw new Error('Ошибка создания токена')
         }
-
-        const token = await Token.create({ user: userId, refreshToken })
-
-        return token
     }
 
     async removeToken(refreshToken: string) {
-        const tokenData = await Token.deleteOne({ refreshToken })
+        const { error } = await deleteTokens(refreshToken)
 
-        return tokenData
+        if(error) {
+            throw new Error('Ошибка при удалении токена')
+        }
     }
 
     validateAccessToken(token: string) {
@@ -54,9 +56,13 @@ class Service {
     }
 
     async findToken(refreshToken: string) {
-        const tokenData = await Token.findOne({ refreshToken })
+        const { data, error } = await findTokens(refreshToken)
 
-        return tokenData
+        if(error) {
+            throw new Error('Ошибка при поиске токена')
+        }
+
+        return data
     }
 }
 

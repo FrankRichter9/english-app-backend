@@ -1,22 +1,25 @@
-import { Schema, model } from 'mongoose'
+type UserOptionalId = Omit<User, "id"> & {id?: number}
 
-const UserSchema = new Schema({
-	email: {
-		type: String,
-		unique: true,
-		required: true,
-	},
-	password: {
-		type: String,
-		required: true,
-	},
-	isActivated: {
-		type: Boolean,
-		default: false,
-	},
-	activationLink: {
-		type: String
+export class User {
+	id: number
+	email: string
+	password: string
+	is_activated: boolean
+	activation_link: string
+
+	constructor(user: UserOptionalId) {
+		this.id = user.id || 1
+		this.email = user.email
+		this.password = user.password
+		this.is_activated = user.is_activated
+		this.activation_link = user.activation_link
 	}
-})
+}
 
-export const User = model('User', UserSchema)
+export function createUserDto(user: User) {
+	return {
+		email: user.email,
+		id: user.id,
+		is_activated: Boolean(Number(user.is_activated))
+	}
+}

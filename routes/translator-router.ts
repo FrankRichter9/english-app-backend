@@ -1,6 +1,8 @@
 import express from 'express'
 import TranslatorController from '../controllers/translator-controller'
 import WordsController from '../controllers/words-controller'
+import authMiddlewares from '../middlewares/auth-middlewares'
+import usersController from '../controllers/users-controller'
 
 const translatorRouter = express.Router()
 
@@ -58,5 +60,6 @@ translatorRouter.get('/translate', TranslatorController.translate)
 translatorRouter.get('/words', WordsController.getAllWords)
 translatorRouter.post('/word', WordsController.setWord)
 translatorRouter.delete('/word', WordsController.deleteWord)
+translatorRouter.get('/users', authMiddlewares, usersController.getUsers)
 
 export default translatorRouter

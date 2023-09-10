@@ -4,22 +4,22 @@ import { UserService } from '../services/user-service'
 
 class AuthController {
 	async registration(req: express.Request, res: express.Response) {
-		console.log('TEST')
 		try {
 			const { email, password } = req.body
 			console.log(email, password)
-			// const userData = await UserService.registration(email, password)
+			const userData = await UserService.registration(email, password)
+			console.log(userData)
 
 			// res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
 
-			return res.json({ text: 'пошел нахуй' })
-		} catch (e) {
-			console.log(e)
+			return res.json({ user: userData.user })
+		} catch (e: any) {
 			res.status(400).json({
-				text: 'привет'
+				text: e?.message || 'Error'
 			})
 		}
 	}
+
 	async login(req: express.Request, res: express.Response) {
 		try {
 			const { email, password } = req.body
@@ -51,16 +51,16 @@ class AuthController {
 	}
 
 	async activate(req: express.Request, res: express.Response) {
-		try {
-			const activationLink = req.params.link
-			await UserService.activate(activationLink)
+		// try {
+		// 	const activationLink = req.params.link
+		// 	await UserService.activate(activationLink)
 
-			return res.redirect(process.env.CLIENT_URL || '#')
+		// 	return res.redirect(process.env.CLIENT_URL || '#')
 
-		} catch (e) {
-			console.log(e)
-			res.status(400).json(e)
-		}
+		// } catch (e) {
+		// 	console.log(e)
+		// 	res.status(400).json(e)
+		// }
 	}
 
 	async refresh(req: express.Request, res: express.Response) {
@@ -73,16 +73,6 @@ class AuthController {
 
 			return res.json(userData)
 
-		} catch (e) {
-			console.log(e)
-			res.status(400).json(e)
-		}
-	}
-	async getUsers(req: express.Request, res: express.Response) {
-		try {
-			const users = await UserService.getAllUsers()
-
-			res.json(users)
 		} catch (e) {
 			console.log(e)
 			res.status(400).json(e)
