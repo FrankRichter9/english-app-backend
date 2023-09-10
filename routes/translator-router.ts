@@ -56,10 +56,10 @@ const translatorRouter = express.Router()
  *                                  $ref: '#/components/schemas/Book'
  */
 
-translatorRouter.get('/translate', TranslatorController.translate)
-translatorRouter.get('/words', WordsController.getAllWords)
-translatorRouter.post('/word', WordsController.setWord)
-translatorRouter.delete('/word', WordsController.deleteWord)
+translatorRouter.get('/translate', authMiddlewares, TranslatorController.translate)
+translatorRouter.get('/words', authMiddlewares, WordsController.getAllWords)
+translatorRouter.post('/word', authMiddlewares, WordsController.setWord)
+translatorRouter.delete('/word', authMiddlewares, WordsController.deleteWord)
 translatorRouter.get('/users', authMiddlewares, usersController.getUsers)
 
 export default translatorRouter

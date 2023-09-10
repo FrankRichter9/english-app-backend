@@ -126,6 +126,19 @@ class Service {
 
         return users
     }
+
+    async getMeUser(refreshToken: string) {
+        const userData = TokenService.validateRefreshToken(refreshToken)
+
+        // @ts-expect-error
+        const req = userData?.id && await findUserById(userData.id)
+
+        if(!req.data || req.error) {
+            throw new Error('Пользователь не найден')
+        }
+
+        return createUserDto(req.data)
+    }
 }
 
 export const UserService = new Service()

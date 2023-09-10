@@ -7,8 +7,6 @@ export default async function (req: express.Request, res: express.Response, next
         const authorizationHeader = req.headers.authorization
         const { refreshToken } = req.cookies
 
-        console.log('req.cookies', req.cookies)
-
         if(!authorizationHeader) {
             throw new Error("Ошибка авторизации")
         }

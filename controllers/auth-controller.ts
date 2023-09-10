@@ -78,6 +78,20 @@ class AuthController {
 			res.status(400).json(e)
 		}
 	}
+
+	async me(req: express.Request, res: express.Response) {
+		try {
+			const { refreshToken } = req.cookies
+
+			const user = await UserService.getMeUser(refreshToken)
+
+			return res.json(user)
+
+		} catch (e) {
+			console.log(e)
+			res.status(400).json(e)
+		}
+	}
 }
 
 export default new AuthController()
