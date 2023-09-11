@@ -7,6 +7,7 @@ import { createTokensTable } from '../../sql/tokens/create-tokens-table'
 import { addTokens } from '../../sql/tokens/add-tokens'
 import { deleteTokens } from '../../sql/tokens/delete-tokens'
 import { findTokens } from '../../sql/tokens/find-tokens'
+import { findTokensByUserId } from '../../sql/tokens/find-tokens-by-user-id'
 
 class Service {
     generateToken(payload: Record<string, any>) {
@@ -20,6 +21,12 @@ class Service {
     }
 
     async saveToken(userId: number, refreshToken: string) {
+        // const { data: userInTokens } = await findTokensByUserId(userId)
+
+        // if(userInTokens) {
+        //     return
+        // }
+
         const { error } = await addTokens(userId, refreshToken)
 
         if(error) {

@@ -10,7 +10,7 @@ import swaggerJsDoc from 'swagger-jsdoc'
 import mongoose, { Schema } from 'mongoose'
 import authRouter from './routes/auth-router'
 import { SqlService } from './sql/connect-bd'
-import { createWordsTable } from './sql/create-words-table'
+import { createWordsTable } from './sql/words/create-words-table'
 
 dotenv.config()
 
@@ -49,7 +49,6 @@ app.use('/auth', authRouter)
 async function startApp() {
 	try {
 		await SqlService.connect()
-		// createWordsTable()
 
 		app.listen(PORT, () => {
 				console.log(`Server started on port ${PORT}...`)

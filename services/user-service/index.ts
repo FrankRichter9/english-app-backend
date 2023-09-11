@@ -10,10 +10,13 @@ import { addUser } from '../../sql/users/add-user'
 import { getUsers } from '../../sql/users/get-users'
 import { findTokens } from '../../sql/tokens/find-tokens'
 import { findUserById } from '../../sql/users/find-user-by-id'
+import { findTokensByUserId } from '../../sql/tokens/find-tokens-by-user-id'
+import { createTokensTable } from '../../sql/tokens/create-tokens-table'
+import { deleteTokens } from '../../sql/tokens/delete-tokens'
 
 class Service {
-    async registration(email: string, password: string) {
-        // const createTableErr = await createUsersTable()
+    async registration(username: string, email: string, password: string) {
+        const createTableErr = await createUsersTable()
         const { data: candidate } = await findUserByEmail(email)
 
         if(candidate) {
@@ -23,7 +26,7 @@ class Service {
         const hashPassword = await bcrypt.hash(password, 3)
         const activation_link = uuidv4()
 
-        const { error: addUserError } = await addUser(new User({ email, password: hashPassword, activation_link, is_activated: false }))
+        const { error: addUserError } = await addUser(new User({ username, email, password: hashPassword, activation_link, is_activated: false }))
 
         if(addUserError) {
             throw new Error(`Ошибка создания пользователя`)
@@ -56,6 +59,8 @@ class Service {
 
     async login(email: string, password: string) {
         const { data: user } = await findUserByEmail(email)
+
+        // createTokensTable()
 
         const errorText = 'Неверный логин или пароль'
         
@@ -113,6 +118,7 @@ class Service {
         }
         const tokens = TokenService.generateToken(userDto)
 
+        await deleteTokens(refreshToken)
         await TokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {

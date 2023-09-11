@@ -1,4 +1,4 @@
-import { SqlService } from "./connect-bd";
+import { SqlService } from "../connect-bd";
 
 export const deleteWord = async (id: number) => {
     const client = SqlService.client

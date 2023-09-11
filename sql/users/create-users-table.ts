@@ -8,6 +8,7 @@ export const createUsersTable = async () => {
             `CREATE TABLE Users
                 (
                     id serial primary key,
+                    username VARCHAR(30),
                     email VARCHAR(50),
                     password VARCHAR(90),
                     is_activated BIT,

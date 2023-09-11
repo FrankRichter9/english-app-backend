@@ -1,11 +1,14 @@
-import { SqlService } from "./connect-bd";
+import { SqlService } from "../connect-bd";
 
-export const countWords = async () => {
+export const countWords = async (userId?: number) => {
     const client = SqlService.client
+
+    const WHERE  = userId ? `WHERE  "user_id"=${userId}` : ''
 
     const count = await new Promise((resolve) => {
         client?.query(`
             SELECT COUNT(*) FROM Words
+            ${WHERE}
         `, (error, res) => {
             console.log('error', error)
 

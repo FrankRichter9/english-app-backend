@@ -5,10 +5,13 @@ import { UserService } from '../services/user-service'
 class AuthController {
 	async registration(req: express.Request, res: express.Response) {
 		try {
-			const { email, password } = req.body
-			console.log(email, password)
-			const userData = await UserService.registration(email, password)
-			console.log(userData)
+			const { email, password, username } = req.body
+
+			if(!email || !password || !username) {
+				throw new Error('Не указано обязательное поле')
+			}
+
+			const userData = await UserService.registration(username, email, password)
 
 			// res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
 
@@ -29,9 +32,10 @@ class AuthController {
 
 			return res.json(userData)
 
-		} catch (e) {
-			console.log(e)
-			res.status(400).json(e)
+		} catch (e: any) {
+			res.status(400).json({
+				text: e?.message || 'Error'
+			})
 		}
 	}
 
