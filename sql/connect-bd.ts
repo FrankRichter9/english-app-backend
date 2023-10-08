@@ -1,7 +1,10 @@
 import { Client } from 'pg'
+import { createTokensTable } from './tokens/create-tokens-table';
+import { createUsersTable } from './users/create-users-table';
+import { createWordsTable } from './words/create-words-table';
 
 const config = {
-	host: 'master.8570a0aa-f936-440c-a576-d683395f752c.c.dbaas.selcloud.ru',
+	host: process.env.DB_HOST_IP,
 	port: 5432,
 	database: process.env.DB_NAME,
 	user: process.env.DB_USER,
@@ -19,6 +22,12 @@ class SQL {
         // });
 
         await this.client.connect()
+    }
+
+    createTabels = async () => {
+        await createTokensTable()
+        await createUsersTable()
+        await createWordsTable()
     }
 }
 export const SqlService = new SQL()

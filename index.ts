@@ -49,6 +49,7 @@ app.use('/auth', authRouter)
 async function startApp() {
 	try {
 		await SqlService.connect()
+		// await SqlService.createTabels()
 
 		app.listen(PORT, () => {
 				console.log(`Server started on port ${PORT}...`)
