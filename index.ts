@@ -7,11 +7,10 @@ import dotenv from 'dotenv'
 import swaggerUI from 'swagger-ui-express'
 import swaggerJsDoc from 'swagger-jsdoc'
 
-import mongoose, { Schema } from 'mongoose'
 import authRouter from './routes/auth-router'
 import { SqlService } from './sql/connect-bd'
 import { createWordsTable } from './sql/words/create-words-table'
-import { OpenAI} from 'openai'
+// import { OpenAI} from 'openai'
 import axios from 'axios'
 
 dotenv.config()

@@ -5,18 +5,18 @@ import { getWords } from '../sql/words/get-words'
 import { deleteWord } from '../sql/words/delete-word'
 import { countWords } from '../sql/words/count-words'
 
-import { OpenAI } from 'openai'
+// import { OpenAI } from 'openai'
 import { patchWord } from '../sql/words/patch-word'
 
 const DEFAULT_LIMIT = 20
 
 class WordsController {
-	gpt: OpenAI
+	// gpt: OpenAI
 
 	constructor() {
-		this.gpt = new OpenAI({
-			apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
-		});
+		// this.gpt = new OpenAI({
+		// 	apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
+		// });
 	}
 
 	async getAllWords(req: express.Request, res: express.Response) {
@@ -43,32 +43,33 @@ class WordsController {
 	}
 
 	async generateWords(req: express.Request, res: express.Response) {
-		try {
-			const gpt = new OpenAI({
-				apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
-			});
+		// try {
+			// const gpt = new OpenAI({
+			// 	apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
+			// });
+		// 	const gpt = null
 
-			const chatCompletion = await gpt?.chat.completions.create({
-				messages: [{ role: "user", content: `придумай для меня 10 слов на английском, исключи такие слова как [cat, dog, house, apple, car, book, tree, sun], ответ дай в формате json без дополнительного текста, вот так { words: { word: слово на английском, translate: его перевод на русский } }` }],
-				model: "gpt-3.5-turbo",
-			});
+		// 	const chatCompletion = await gpt?.chat.completions.create({
+		// 		messages: [{ role: "user", content: `придумай для меня 10 слов на английском, исключи такие слова как [cat, dog, house, apple, car, book, tree, sun], ответ дай в формате json без дополнительного текста, вот так { words: { word: слово на английском, translate: его перевод на русский } }` }],
+		// 		model: "gpt-3.5-turbo",
+		// 	});
 
-			const resp = chatCompletion.choices[0].message.content
+		// 	const resp = chatCompletion.choices[0].message.content
 
-			let words = []
+		// 	let words = []
 
-			try {
-				words = resp ? JSON.parse(resp)?.words || [] : []
-			} catch {
+		// 	try {
+		// 		words = resp ? JSON.parse(resp)?.words || [] : []
+		// 	} catch {
 
-			}
+		// 	}
 
-			return res.json({
-				words,
-			})
-		} catch {
-			res.send(500)
-		}
+		// 	return res.json({
+		// 		words,
+		// 	})
+		// } catch {
+		// 	res.send(500)
+		// }
 	}
 
 	async setWord(req: express.Request, res: express.Response) {
