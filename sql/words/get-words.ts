@@ -6,11 +6,13 @@ export const getWords = async (limit?: number, offset?: number, userId?: number)
     const LIMIT = limit ? `LIMIT ${limit}` : ''
     const OFFSET  = offset ? `OFFSET  ${offset}` : ''
     const WHERE  = userId ? `WHERE  "user_id"=${userId}` : ''
+    const ORDER = 'ORDER BY "id"'
 
     const words = await new Promise((resolve) => {
         client?.query(`
             SELECT * FROM Words
             ${WHERE}
+            ${ORDER}
             ${LIMIT}
             ${OFFSET}
         `, (error, res) => {

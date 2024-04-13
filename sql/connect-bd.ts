@@ -18,7 +18,7 @@ class SQL {
         this.client = new Client(config)
 
         // this.client.connect((error) => {
-        //     if (error) throw error;
+        //     console.log(error)
         // });
 
         await this.client.connect()

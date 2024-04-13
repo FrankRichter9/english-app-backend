@@ -5,9 +5,20 @@ import { getWords } from '../sql/words/get-words'
 import { deleteWord } from '../sql/words/delete-word'
 import { countWords } from '../sql/words/count-words'
 
+import { OpenAI } from 'openai'
+import { patchWord } from '../sql/words/patch-word'
+
 const DEFAULT_LIMIT = 20
 
 class WordsController {
+	gpt: OpenAI
+
+	constructor() {
+		this.gpt = new OpenAI({
+			apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
+		});
+	}
+
 	async getAllWords(req: express.Request, res: express.Response) {
 		const {limit: reqLimit, page: reqPage} = req.query
 
@@ -29,6 +40,35 @@ class WordsController {
 				countPages: Math.ceil(count / limit)
 			}
 		})
+	}
+
+	async generateWords(req: express.Request, res: express.Response) {
+		try {
+			const gpt = new OpenAI({
+				apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
+			});
+
+			const chatCompletion = await gpt?.chat.completions.create({
+				messages: [{ role: "user", content: `придумай для меня 10 слов на английском, исключи такие слова как [cat, dog, house, apple, car, book, tree, sun], ответ дай в формате json без дополнительного текста, вот так { words: { word: слово на английском, translate: его перевод на русский } }` }],
+				model: "gpt-3.5-turbo",
+			});
+
+			const resp = chatCompletion.choices[0].message.content
+
+			let words = []
+
+			try {
+				words = resp ? JSON.parse(resp)?.words || [] : []
+			} catch {
+
+			}
+
+			return res.json({
+				words,
+			})
+		} catch {
+			res.send(500)
+		}
 	}
 
 	async setWord(req: express.Request, res: express.Response) {
@@ -59,7 +99,25 @@ class WordsController {
 		// createWordsTable()
 		const err = await deleteWord(req.body.id)
 
-		res.send(err ? 400 : 200)
+		res.send(err ? 500 : 200)
+	}
+
+	async patchWord(req: express.Request, res: express.Response) {
+
+		const { id, word, translate } = req.body
+
+		if(!id || !word || !translate) {
+			res.send(500)
+		}
+
+		const updatedDate = (new Date()).toISOString()
+
+		const err = await patchWord(id, {
+			word,
+			translate
+		}, updatedDate)
+
+		res.send(err ? 500 : 200)
 	}
 }
 

@@ -58,8 +58,10 @@ const translatorRouter = express.Router()
 
 translatorRouter.get('/translate', authMiddlewares, TranslatorController.translate)
 translatorRouter.get('/words', authMiddlewares, WordsController.getAllWords)
+translatorRouter.get('/generateWords', WordsController.generateWords)
 translatorRouter.post('/word', authMiddlewares, WordsController.setWord)
 translatorRouter.delete('/word', authMiddlewares, WordsController.deleteWord)
+translatorRouter.patch('/word', authMiddlewares, WordsController.patchWord)
 translatorRouter.get('/users', authMiddlewares, usersController.getUsers)
 
 export default translatorRouter

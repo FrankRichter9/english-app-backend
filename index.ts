@@ -11,6 +11,8 @@ import mongoose, { Schema } from 'mongoose'
 import authRouter from './routes/auth-router'
 import { SqlService } from './sql/connect-bd'
 import { createWordsTable } from './sql/words/create-words-table'
+import { OpenAI} from 'openai'
+import axios from 'axios'
 
 dotenv.config()
 
